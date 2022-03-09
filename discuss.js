@@ -26,10 +26,15 @@ var downvote = document.getElementById("downvote");
 * 4. Search the question.
 
 */ 
-
+/*
+* On Day 3
+* 1. Add question created time.
+* 2. Add favourite question. 
+* 3. sort the question.
+*/
 
 //After Searching ShowResult.
-questionSearch.addEventListener("change", function (event) 
+questionSearch.addEventListener("keyup", function (event) 
 {
   filterResult(event.target.value);
 })
@@ -84,6 +89,15 @@ function onLoad()
 {
   var allQuestions = getAllQuestions();
   allQuestions = sortallQuestionOnUpvotes(allQuestions);
+  allQuestions = allQuestions.sort(function(currentQ, nextQ)
+  {
+    if(currentQ.isFav)
+    {
+      return -1;
+    }
+    
+    return 1;
+  })
   allQuestions.forEach(function (question) {
     addQuestionToPanel(question)
   })
@@ -96,6 +110,7 @@ function sortallQuestionOnUpvotes(allQuestions)
   return allQuestions.sort((a,b) =>{
     return b.upvotes - a.upvotes
   })
+
 }
 
 //Call The OnLoad Function.
@@ -112,7 +127,8 @@ function onQuestionSubmit() {
     responses: [],
     upvotes: 0,
     downvotes: 0,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    isFav: false,
   }
   //This Condtiion is True Then Continue Further Process.
  if(  questionSubject.value != "" && questionDescription.value ){
@@ -190,9 +206,92 @@ function addQuestionToPanel(question)
   creationDateAndTimeNode.style.marginRight="40px"
   allQuestionsList.appendChild(questionContainer);
 
+
+  var createAtNode = document.createElement("p");
+  createAtNode.innerHTML = "created: "+updateAndConvertTime(createAtNode)(question.createdAt)+" ago";
+  questionContainer.appendChild(createAtNode);
+
+  var addToFavNode = document.createElement("button");
+  
+  if(question.isFav)
+  {
+    addToFavNode.innerHTML = "Remove fav"
+  }
+  else
+  {
+    addToFavNode.innerHTML = "Add fav"
+  }
+  
+  questionContainer.appendChild(addToFavNode);
+
+  addToFavNode.addEventListener("click", toggleFavQuestion(question));
+
+
+
   //Listener For On Question Click.
   questionContainer.addEventListener("click", onQuestionClick(question));
 
+}
+
+//Favourite Question.
+function toggleFavQuestion(question)
+{
+  return function(event)
+  {
+
+    question.isFav = !question.isFav;
+    
+    updateQuestion(question);
+
+    if(question.isFav)
+    {
+      event.target.innerHTML = "remove fav"
+    }
+    else
+    {
+      event.target.innerHTML = "add fav"
+    }
+
+  }
+}
+
+
+// setInterval and update time
+function updateAndConvertTime(element)
+{
+  return function(time)
+  {
+    setInterval(function()
+    {
+      element.innerHTML = "created: "+convertDateToCreatedAtTime(time)+" ago";
+    })
+
+    return convertDateToCreatedAtTime(time);
+  }
+}
+
+// convert date to hours ago like format
+function convertDateToCreatedAtTime(date)
+{
+  var currentTime = Date.now();
+  var timeLapsed = currentTime - new Date(date).getTime();
+
+  var secondsDiff = parseInt(timeLapsed / 1000 );
+  var minutesDiff = parseInt(secondsDiff / 60 );
+  var hourDiff = parseInt(minutesDiff / 60 );
+  var day = parseInt(hourDiff / 24);
+  //Modify date and time. 
+  if (day === 0 && hourDiff === 0 && minutesDiff === 0){
+    return (secondsDiff % 60) +" Seconds";
+  } else if (day === 0 && hourDiff === 0){
+    return (minutesDiff % 60) +" minutes " + (secondsDiff % 60) +" Seconds";
+  } else if (day === 0){
+    return (hourDiff % 24)  +" hours "+ (minutesDiff % 60) +" minutes " + (secondsDiff % 60) +" Seconds";
+  } else{
+    return day + " Days " + (hourDiff % 24)  +" hours "+ (minutesDiff % 60) +" minutes " + (secondsDiff % 60) +" Seconds";
+  }
+  
+ 
 }
 
 //After Submit The Question Clear question Form.
