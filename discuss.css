@@ -151,3 +151,15 @@ input
   padding: 6px;
   border-radius: 7px;
 }
+
+#upvote{
+  background-color: green;
+  padding: 10px;
+  border: none;
+}
+
+#downvote{
+  background-color: tomato;
+  padding: 10px;
+  border: none;
+}

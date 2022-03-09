@@ -15,8 +15,8 @@ var submitCommentNode = document.getElementById("commentBtn");
 var questionSearch = document.getElementById("questionSearch");
 var upvote = document.getElementById("upvote");
 var downvote = document.getElementById("downvote");
-
-
+var newQuestionForm = document.getElementById("newQuestionForm");
+var count=1;
 
 /*
 *   On Day 2
@@ -26,12 +26,22 @@ var downvote = document.getElementById("downvote");
 * 4. Search the question.
 
 */ 
+
+// Here main sorting priority is on favourite Question.
+
 /*
-* On Day 3
+*  On Day 3
 * 1. Add question created time.
 * 2. Add favourite question. 
 * 3. sort the question.
+* 4. New question form.
 */
+
+
+
+
+//Open new question form
+newQuestionForm.addEventListener("click",onNewQuestion)
 
 //After Searching ShowResult.
 questionSearch.addEventListener("keyup", function (event) 
@@ -174,7 +184,6 @@ function addQuestionToPanel(question)
   questionContainer.style.background = "orange";
   questionContainer.style.borderRadius="30px"
 
-
   var newquestionSubject = document.createElement("h2");
   newquestionSubject.innerHTML = question.title;
   questionContainer.appendChild(newquestionSubject);
@@ -188,31 +197,34 @@ function addQuestionToPanel(question)
 
 
   var upvoteTextNode = document.createElement("h4");
-  upvoteTextNode.innerHTML = "upvote = " + question.upvotes
+  upvoteTextNode.innerHTML = "Upvote = " + question.upvotes
   upvoteTextNode.style.color = "green";
   questionContainer.appendChild(upvoteTextNode);
   upvoteTextNode.style.marginLeft="5px";
 
   var downvoteTextNode = document.createElement("h4");
-  downvoteTextNode.innerHTML = "downvote = " + question.downvotes;
-  downvoteTextNode.style.color = "red";
+  downvoteTextNode.innerHTML = "Downvote = " + question.downvotes;
+  downvoteTextNode.style.color = "tomato";
   questionContainer.appendChild(downvoteTextNode);
   downvoteTextNode.style.marginLeft="5px";
+  /*
+  //This question create at that time and date.
 
-  var creationDateAndTimeNode = document.createElement("h4");
-  creationDateAndTimeNode.innerHTML = new Date(question.createdAt).toLocaleString();
-  questionContainer.appendChild(creationDateAndTimeNode);
-  creationDateAndTimeNode.style.textAlign="right"
-  creationDateAndTimeNode.style.marginRight="40px"
+    var creationDateAndTimeNode = document.createElement("h4");
+    creationDateAndTimeNode.innerHTML = new Date(question.createdAt).toLocaleString();
+    questionContainer.appendChild(creationDateAndTimeNode);
+    creationDateAndTimeNode.style.textAlign="right"
+    creationDateAndTimeNode.style.marginRight="40px"
+  */
   allQuestionsList.appendChild(questionContainer);
 
 
-  var createAtNode = document.createElement("p");
-  createAtNode.innerHTML = "created: "+updateAndConvertTime(createAtNode)(question.createdAt)+" ago";
-  questionContainer.appendChild(createAtNode);
-
   var addToFavNode = document.createElement("button");
-  
+  addToFavNode.style.background="lightgreen"
+  addToFavNode.style.color="darkBlack"
+  addToFavNode.style.padding="5px"
+  addToFavNode.style.borderRadius="40%"
+
   if(question.isFav)
   {
     addToFavNode.innerHTML = "Remove fav"
@@ -221,12 +233,18 @@ function addQuestionToPanel(question)
   {
     addToFavNode.innerHTML = "Add fav"
   }
-  
+ 
   questionContainer.appendChild(addToFavNode);
 
   addToFavNode.addEventListener("click", toggleFavQuestion(question));
 
 
+  
+  var createAtNode = document.createElement("p");
+  createAtNode.innerHTML = "created: "+updateAndConvertTime(createAtNode)(question.createdAt)+" ago";
+  createAtNode.style.marginLeft="55%";
+  createAtNode.style.color="white"
+  questionContainer.appendChild(createAtNode);
 
   //Listener For On Question Click.
   questionContainer.addEventListener("click", onQuestionClick(question));
@@ -238,11 +256,10 @@ function toggleFavQuestion(question)
 {
   return function(event)
   {
-
     question.isFav = !question.isFav;
     
     updateQuestion(question);
-
+    
     if(question.isFav)
     {
       event.target.innerHTML = "remove fav"
@@ -251,8 +268,8 @@ function toggleFavQuestion(question)
     {
       event.target.innerHTML = "add fav"
     }
-
   }
+  
 }
 
 
@@ -263,14 +280,14 @@ function updateAndConvertTime(element)
   {
     setInterval(function()
     {
-      element.innerHTML = "created: "+convertDateToCreatedAtTime(time)+" ago";
+      element.innerHTML = "Created : "+convertDateToCreatedAtTime(time)+" ago";
     })
 
     return convertDateToCreatedAtTime(time);
   }
 }
 
-// convert date to hours ago like format
+// convert date to hours ago in format.
 function convertDateToCreatedAtTime(date)
 {
   var currentTime = Date.now();
@@ -284,11 +301,11 @@ function convertDateToCreatedAtTime(date)
   if (day === 0 && hourDiff === 0 && minutesDiff === 0){
     return (secondsDiff % 60) +" Seconds";
   } else if (day === 0 && hourDiff === 0){
-    return (minutesDiff % 60) +" minutes " + (secondsDiff % 60) +" Seconds";
+    return (minutesDiff % 60) +" Minutes " + (secondsDiff % 60) +" Seconds";
   } else if (day === 0){
-    return (hourDiff % 24)  +" hours "+ (minutesDiff % 60) +" minutes " + (secondsDiff % 60) +" Seconds";
+    return (hourDiff % 24)  +" Hours "+ (minutesDiff % 60) +" Minutes " + (secondsDiff % 60) +" Seconds";
   } else{
-    return day + " Days " + (hourDiff % 24)  +" hours "+ (minutesDiff % 60) +" minutes " + (secondsDiff % 60) +" Seconds";
+    return day + " Days " + (hourDiff % 24)  +" Mours "+ (minutesDiff % 60) +" Minutes " + (secondsDiff % 60) +" Seconds";
   }
   
  
@@ -302,6 +319,7 @@ function clearQuestionForm() {
 
 // Function For When Click On Question. 
 function onQuestionClick(question) {
+
   return function () {
     //After Click On Question Hide Question From.
     hideQuestionPanel();
@@ -316,11 +334,19 @@ function onQuestionClick(question) {
     // create question details
     addQuestionToRight(question);
 
+    //Only for Write Response in left panel.
+    var heading =document.createElement("h2");
+    heading.innerHTML="Responses";
+    heading.style.color="gray"
+    heading.style.textAlign="center";
+    responseContainer.appendChild(heading);
+
     //Again After click On Question sow All Pervious Response.
     question.responses.forEach(function (response) {
       addResponseInPanel(response)
     })
-
+    
+  
   
     submitCommentNode.onclick = onResponeSubmit(question);
     upvote.onclick = upvoteQuestion(question);
@@ -356,8 +382,8 @@ function updateQuestionUI(question) {
 
   var questionContainerNode = document.getElementById(question.title);
 
-  questionContainerNode.childNodes[2].innerHTML = "upvote = " + question.upvotes;
-  questionContainerNode.childNodes[3].innerHTML = "downvote = " + question.downvotes;
+  questionContainerNode.childNodes[2].innerHTML = "Upvote = " + question.upvotes;
+  questionContainerNode.childNodes[3].innerHTML = "Downvote = " + question.downvotes;
 
 }
 //Click On Response Submit Button.
@@ -367,9 +393,9 @@ function onResponeSubmit(question) {
       name: commentatorName.value,
       description: commentNode.value
     }
-
+  
     saveResponse(question, response);
-
+   
     addResponseInPanel(response)
     clearResponseForm();
   }
@@ -385,10 +411,13 @@ function addResponseInPanel(response) {
   var userCommentNode = document.createElement("p");
   userCommentNode.innerHTML = response.description;
 
+ 
   responseContainer1.appendChild(userNameNode);
   responseContainer1.appendChild(userCommentNode);
+ 
 
   responseContainer.appendChild(responseContainer1);
+ 
 }
 //After Click On submit Button Clear Question Form.
 function clearResponseForm() {
@@ -412,6 +441,11 @@ function showDetails() {
 
 //Question Show In RightPanel After Click On Question.
 function addQuestionToRight(question) {
+
+  var questionHeading = document.createElement("h2");
+  questionHeading.innerHTML="Question";
+  questionHeading.style.color="gray"
+  questionHeading.style.textAlign="center"
   var titleNode = document.createElement("h3");
   titleNode.innerHTML = question.title;
 
@@ -421,7 +455,7 @@ function addQuestionToRight(question) {
   var createdDate = document.createElement("h4");
   createdDate.innerHTML = new Date(question.createdAt).toLocaleString();
 
-
+  FullQuestionContainer.appendChild(questionHeading);
   FullQuestionContainer.appendChild(titleNode);
   FullQuestionContainer.appendChild(descriptionNode);
   FullQuestionContainer.appendChild(createdDate);
@@ -431,7 +465,6 @@ function addQuestionToRight(question) {
 //update question
 function updateQuestion(updatedQuestion) {
   var allQuestions = getAllQuestions();
-
   var revisedQuestions = allQuestions.map(function (question) {
     if (updatedQuestion.title === question.title) {
       return updatedQuestion
@@ -478,6 +511,9 @@ function printNoMatchFound() {
 
 //Delete Selected Question From Pnael or Localstorage. 
 function resolveQuestion(question) {
+  resolveQuestions.style.background="red";
+  resolveQuestions.style.padding="10px"
+  resolveQuestions.style.border="none";
   return function () {
     var allQuestions = getAllQuestions();
     var len = allQuestions.length;
@@ -495,3 +531,18 @@ function resolveQuestion(question) {
   }
 }
 
+function onNewQuestion()
+{
+  allQuestionsList.innerHTML = "";
+  FullQuestionContainer.style.display="none";
+  commentContainerNode.style.display="none";
+  createQuestionForm.style.display="";
+  resolveQuestionCOntainer.style.display="none";
+  responseContainer.style.display="none";
+  onLoad();
+}
+
+function updateResponse()
+{
+  onLoad();
+}
