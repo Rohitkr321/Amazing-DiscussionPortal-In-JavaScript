@@ -16,7 +16,7 @@ var questionSearch = document.getElementById("questionSearch");
 var upvote = document.getElementById("upvote");
 var downvote = document.getElementById("downvote");
 var newQuestionForm = document.getElementById("newQuestionForm");
-var count=1;
+
 
 /*
 *   On Day 2
@@ -268,8 +268,8 @@ function toggleFavQuestion(question)
     {
       event.target.innerHTML = "add fav"
     }
+    event.stopPropagation()
   }
-  
 }
 
 
@@ -319,7 +319,7 @@ function clearQuestionForm() {
 
 // Function For When Click On Question. 
 function onQuestionClick(question) {
-
+  
   return function () {
     //After Click On Question Hide Question From.
     hideQuestionPanel();
