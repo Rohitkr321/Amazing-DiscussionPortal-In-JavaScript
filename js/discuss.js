@@ -27,7 +27,7 @@ var newQuestionForm = document.getElementById("newQuestionForm");
 
 */ 
 
-// Here main sorting priority is on favourite Question.
+// Here sorting priority is on favourite Question.
 
 /*
 *  On Day 3
